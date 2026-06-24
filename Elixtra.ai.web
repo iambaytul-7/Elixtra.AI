@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elixtra AI — Generate Leads, Book Calls & Close Deals on Autopilot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#F7F3EE',
+                        rust: '#C94E1E',
+                        'rust-dark': '#A83D14',
+                        'rust-light': '#F5DDD3',
+                        'rust-50': '#FDF5F1',
+                        dark: {
+                            900: '#0C0C14',
+                            800: '#12121E',
+                            700: '#1A1A2A',
+                            600: '#242438',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Instrument Serif', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F7F3EE;
+            color: #1a1a1a;
+        }
+        .font-serif { font-family: 'Instrument Serif', serif; }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .anim-in { animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+        .d1 { animation-delay: 0.1s; }
+        .d2 { animation-delay: 0.2s; }
+        .d3 { animation-delay: 0.3s; }
+        .d4 { animation-delay: 0.4s; }
+        .d5 { animation-delay: 0.5s; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-visible { opacity: 1; transform: translateY(0); }
+
+        .card-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 40px -12px rgba(0,0,0,0.08); }
+        .dark-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .dark-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 50px -12px rgba(201,78,30,0.2); }
+
+        .btn-rust {
+            background: #C94E1E;
+            color: #fff;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px -3px rgba(201,78,30,0.35);
+        }
+        .btn-rust:hover {
+            background: #A83D14;
+            box-shadow: 0 6px 20px -3px rgba(201,78,30,0.45);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            border: 1.5px solid rgba(0,0,0,0.12);
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        .btn-ghost:hover {
+            border-color: #C94E1E;
+            color: #C94E1E;
+            background: #FDF5F1;
+        }
+
+        .nav-link {
+            position: relative;
+            color: #666;
+            transition: color 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .nav-link:hover { color: #1a1a1a; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #C94E1E;
+            border-radius: 1px;
+            transition: width 0.25s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        .rust-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #C94E1E;
+            border-radius: 50%;
+        }
+
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .mobile-menu.open { max-height: 400px; }
+        html { scroll-behavior: smooth; }
+
+        .dark-grid {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none' stroke='%23fff' stroke-width='0.4'/%3E%3C/svg%3E");
+            opacity: 0.035;
+        }
+
+        .label-tag {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .logo-frame {
+            background: #111;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        .social-icon:hover {
+            border-color: #C94E1E;
+            color: #C94E1E;
+            background: #FDF5F1;
+            transform: translateY(-2px);
+        }
+
+        .footer-link {
+            color: #999;
+            transition: color 0.2s;
+        }
+        .footer-link:hover { color: #C94E1E; }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+    <!-- Nav -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-cream/85 backdrop-blur-md border-b border-black/[0.06]">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2.5">
+                <div class="logo-frame w-9 h-9">
+                    <img src="https://z-cdn-media.chatglm.cn/files/17af2cf9-c55c-4342-b3fe-e60b85e924c1.png?auth_key=1882287911-eb83970e543e4666ad2924108c95cfe3-0-a7e1f50cd61b759c7a3bcdacf475a881" alt="Elixtra AI" class="w-full h-full object-cover">
+                </div>
+                <span class="text-gray-900 font-sans font-bold text-[15px] tracking-tight">Elixtra <span class="text-rust">AI</span></span>
+            </a>
+            <div class="hidden md:flex items-center gap-7">
+                <a href="#services" class="nav-link">Our Services</a>
+                <a href="#how" class="nav-link">How It Works</a>
+                <a href="#results" class="nav-link">Results</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="btn-rust text-xs font-semibold px-5 py-2.5 rounded-lg inline-flex items-center gap-2">
+                    Book Strategy Call
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </a>
+            </div>
+            <button id="menuToggle" class="md:hidden text-gray-700 p-2 rounded-lg hover:bg-black/5 transition">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div id="mobileMenu" class="mobile-menu md:hidden bg-cream border-t border-black/[0.06]">
+            <div class="px-5 py-4 flex flex-col gap-3">
+                <a href="#services" class="text-gray-600 hover:text-gray-900 text-sm font-medium py-2.5 transition mobile-link">Our Services</a>
+                <a href="#how" class="text-gray-600 hover:text-gray-900 text-sm font-medium py-2.5 transition mobile-link">How It Works</a>
+                <a href="#results" class="text-gray-600 hover:text-gray-900 text-sm font-medium py-2.5 transition mobile-link">Results</a>
+                <a href="#contact" class="text-gray-600 hover:text-gray-900 text-sm font-medium py-2.5 transition mobile-link">Contact</a>
+                <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="btn-rust text-xs font-semibold px-5 py-2.5 rounded-lg text-center mt-1">Book Strategy Call</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="pt-28 pb-14 md:pt-36 md:pb-20">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="anim-in d1 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white border border-black/[0.06] mb-7">
+                    <span class="rust-dot"></span>
+                    <span class="label-tag text-rust">Trusted by businesses who want to scale</span>
+                </div>
+
+                <h1 class="anim-in d2 font-serif text-4xl sm:text-5xl md:text-[60px] leading-[1.05] text-gray-900 mb-6 tracking-tight">
+                    Generate leads, book calls, and close deals <em class="italic text-rust">on autopilot.</em>
+                </h1>
+
+                <p class="anim-in d3 text-gray-500 text-base md:text-lg font-normal leading-relaxed mb-10 max-w-xl mx-auto">
+                    We build AI systems for businesses to automate lead generation, follow-ups, and appointment booking — so you can focus on closing deals.
+                </p>
+
+                <div class="anim-in d4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="btn-rust text-sm font-semibold px-8 py-3.5 rounded-xl inline-flex items-center gap-2.5">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        Book Strategy Call
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                    <a href="#services" class="btn-ghost text-sm font-medium px-8 py-3.5 rounded-xl inline-flex items-center gap-2 bg-white">
+                        See How It Works
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Two Paths -->
+    <section id="services" class="py-14 md:py-20">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <div class="text-center mb-12">
+                <p class="reveal label-tag text-rust mb-3">Our Services</p>
+                <h2 class="reveal font-serif text-3xl md:text-4xl text-gray-900 tracking-tight" style="transition-delay:100ms;">Choose Your Growth Path</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5 lg:gap-6">
+                <!-- PATH A -->
+                <div class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-8 md:p-10" style="transition-delay:100ms;">
+                    <div class="label-tag text-rust mb-2">Path A — Lead Generation</div>
+                    <h3 class="font-serif text-2xl md:text-[28px] text-gray-900 leading-snug mb-3">
+                        Generate Qualified Leads with AI Ads
+                    </h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-8">
+                        Attract high-intent buyers and sellers, nurture them automatically, and convert them into booked calls — without lifting a finger.
+                    </p>
+                    <div class="space-y-5">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-rust-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i data-lucide="target" class="w-5 h-5 text-rust"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-900 text-sm font-semibold mb-1">AI-Powered Meta Ad Campaigns</p>
+                                <p class="text-gray-400 text-xs leading-relaxed">High-converting ads that attract serious buyers & sellers with precision targeting.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-rust-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i data-lucide="mail-check" class="w-5 h-5 text-rust"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-900 text-sm font-semibold mb-1">Automated Follow-Up Systems</p>
+                                <p class="text-gray-400 text-xs leading-relaxed">Nurture leads 24/7 through emails, messages & personalized workflows. Zero manual effort.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-rust-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i data-lucide="calendar-check" class="w-5 h-5 text-rust"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-900 text-sm font-semibold mb-1">Appointment Booking Automation</p>
+                                <p class="text-gray-400 text-xs leading-relaxed">Qualify leads and schedule appointments directly into your calendar automatically.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="mt-8 btn-rust text-xs font-semibold px-6 py-3 rounded-lg inline-flex items-center gap-2">
+                        Get Started <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+
+                <!-- PATH B -->
+                <div class="reveal dark-lift rounded-2xl p-8 md:p-10 relative overflow-hidden" style="background: linear-gradient(145deg, #0C0C14 0%, #1A1A2A 100%); transition-delay:200ms;">
+                    <div class="absolute inset-0 dark-grid pointer-events-none"></div>
+                    <div class="absolute top-0 right-0 w-56 h-56 bg-rust/10 rounded-full blur-[80px] pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="label-tag text-rust/70 mb-2">Path B — Operations</div>
+                        <h3 class="font-serif text-2xl md:text-[28px] text-white leading-snug mb-3">
+                            Run Your Backend on Autopilot
+                        </h3>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-8">
+                            AI-powered tools that handle your calls, manage your CRM, and run internal operations — so your team can focus on revenue.
+                        </p>
+                        <div class="space-y-5">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/[0.08] flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i data-lucide="phone" class="w-5 h-5 text-rust/80"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-semibold mb-1">AI Voice Receptionist</p>
+                                    <p class="text-gray-500 text-xs leading-relaxed">Answers every call 24/7, qualifies leads, and books appointments automatically.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/[0.08] flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i data-lucide="layout-dashboard" class="w-5 h-5 text-rust/80"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-semibold mb-1">CRM Setup & Pipeline Management</p>
+                                    <p class="text-gray-500 text-xs leading-relaxed">Custom CRM with lead tracking, sales pipeline, and automated workflows.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/[0.08] flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i data-lucide="bot" class="w-5 h-5 text-rust/80"></i>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-semibold mb-1">AI Chatbots & Internal Tools</p>
+                                    <p class="text-gray-500 text-xs leading-relaxed">Handle customer questions, manage inquiries, and automate internal processes.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="mt-8 inline-flex items-center gap-2 text-xs font-semibold px-6 py-3 rounded-lg bg-white text-gray-900 hover:bg-gray-100 transition-all duration-200">
+                            Get Started <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="how" class="py-14 md:py-20">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div>
+                    <p class="reveal label-tag text-rust mb-3">About Us</p>
+                    <h2 class="reveal font-serif text-3xl md:text-4xl text-gray-900 leading-tight mb-5" style="transition-delay:100ms;">
+                        We build AI systems that <em class="italic">work while you sleep</em>
+                    </h2>
+                    <p class="reveal text-gray-500 text-[15px] leading-relaxed mb-4" style="transition-delay:150ms;">
+                        At Elixtra AI, we help businesses eliminate repetitive work and build scalable systems using AI automation.
+                    </p>
+                    <p class="reveal text-gray-500 text-[15px] leading-relaxed mb-8" style="transition-delay:200ms;">
+                        Instead of spending hours chasing leads, manually following up, and managing backend operations, we create automated systems that handle the heavy lifting for you.
+                    </p>
+
+                    <div class="reveal" style="transition-delay:250ms;">
+                        <p class="label-tag text-gray-400 mb-4">Our Goal Is Simple</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3.5 border border-black/[0.06]">
+                                <div class="w-8 h-8 rounded-lg bg-rust-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-rust"></i>
+                                </div>
+                                <span class="text-gray-700 text-sm font-medium">Generate more qualified leads</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3.5 border border-black/[0.06]">
+                                <div class="w-8 h-8 rounded-lg bg-rust-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="calendar" class="w-4 h-4 text-rust"></i>
+                                </div>
+                                <span class="text-gray-700 text-sm font-medium">Increase booked appointments</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3.5 border border-black/[0.06]">
+                                <div class="w-8 h-8 rounded-lg bg-rust-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="handshake" class="w-4 h-4 text-rust"></i>
+                                </div>
+                                <span class="text-gray-700 text-sm font-medium">Help you close more deals</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white rounded-xl px-4 py-3.5 border border-black/[0.06]">
+                                <div class="w-8 h-8 rounded-lg bg-rust-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="piggy-bank" class="w-4 h-4 text-rust"></i>
+                                </div>
+                                <span class="text-gray-700 text-sm font-medium">Save time & reduce costs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reveal" style="transition-delay:200ms;">
+                    <div class="bg-white rounded-2xl border border-black/[0.06] p-8">
+                        <p class="label-tag text-gray-400 mb-5">Our Focus</p>
+                        <div class="space-y-5">
+                            <div class="p-5 rounded-xl bg-rust-50/50 border border-rust/10">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-9 h-9 rounded-lg bg-rust flex items-center justify-center">
+                                        <i data-lucide="user-plus" class="w-4 h-4 text-white"></i>
+                                    </div>
+                                    <p class="text-gray-900 text-sm font-bold">More Leads & Deals</p>
+                                </div>
+                                <p class="text-gray-500 text-xs leading-relaxed pl-12">Helping businesses attract high-intent prospects and convert them into paying clients consistently.</p>
+                            </div>
+                            <div class="p-5 rounded-xl bg-emerald-50/50 border border-emerald-200/50">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center">
+                                        <i data-lucide="clock" class="w-4 h-4 text-white"></i>
+                                    </div>
+                                    <p class="text-gray-900 text-sm font-bold">Save Time & Cut Costs</p>
+                                </div>
+                                <p class="text-gray-500 text-xs leading-relaxed pl-12">Replace manual, repetitive tasks with intelligent automation that works around the clock.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-black/[0.06]">
+                            <div class="text-center">
+                                <p class="font-serif text-3xl text-gray-900">24/7</p>
+                                <p class="text-gray-400 text-xs font-medium mt-1">AI Automation</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-serif text-3xl text-gray-900">0</p>
+                                <p class="text-gray-400 text-xs font-medium mt-1">Manual Follow-Ups</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section class="py-14 md:py-20">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <div class="text-center mb-12">
+                <p class="reveal label-tag text-rust mb-3">What We Build</p>
+                <h2 class="reveal font-serif text-3xl md:text-4xl text-gray-900 tracking-tight" style="transition-delay:100ms;">Complete AI-Powered Systems</h2>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-7" style="transition-delay:0ms;">
+                    <div class="w-11 h-11 rounded-xl bg-rust-50 flex items-center justify-center mb-4">
+                        <i data-lucide="target" class="w-5 h-5 text-rust"></i>
+                    </div>
+                    <h4 class="text-gray-900 text-[15px] font-bold mb-2">AI-Powered Lead Generation</h4>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">High-converting Meta ad campaigns to attract serious buyers and sellers.</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>High-intent targeting</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Optimized Meta campaigns</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Lead capture systems</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Better lead quality</li>
+                    </ul>
+                </div>
+
+                <div class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-7" style="transition-delay:70ms;">
+                    <div class="w-11 h-11 rounded-xl bg-rust-50 flex items-center justify-center mb-4">
+                        <i data-lucide="mail-check" class="w-5 h-5 text-rust"></i>
+                    </div>
+                    <h4 class="text-gray-900 text-[15px] font-bold mb-2">Automated Follow-Up</h4>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Never lose leads to delayed responses. AI nurtures them 24/7.</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Instant responses</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Consistent follow-up</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Better conversion rates</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Zero manual effort</li>
+                    </ul>
+                </div>
+
+                <div class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-7" style="transition-delay:140ms;">
+                    <div class="w-11 h-11 rounded-xl bg-rust-50 flex items-center justify-center mb-4">
+                        <i data-lucide="calendar-check" class="w-5 h-5 text-rust"></i>
+                    </div>
+                    <h4 class="text-gray-900 text-[15px] font-bold mb-2">Appointment Booking</h4>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Turn prospects into booked calls automatically. No back-and-forth.</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Less back-and-forth</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>More meetings booked</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Increased sales opps</li>
+                    </ul>
+                </div>
+
+                <div class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-7" style="transition-delay:210ms;">
+                    <div class="w-11 h-11 rounded-xl bg-rust-50 flex items-center justify-center mb-4">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 text-rust"></i>
+                    </div>
+                    <h4 class="text-gray-900 text-[15px] font-bold mb-2">CRM & Pipeline Management</h4>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Organize your business with smart systems designed for growth.</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Custom CRM setup</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Lead tracking</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Sales pipeline</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Automated workflows</li>
+                    </ul>
+                </div>
+
+                <div class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-7" style="transition-delay:280ms;">
+                    <div class="w-11 h-11 rounded-xl bg-rust-50 flex items-center justify-center mb-4">
+                        <i data-lucide="bot" class="w-5 h-5 text-rust"></i>
+                    </div>
+                    <h4 class="text-gray-900 text-[15px] font-bold mb-2">AI Chatbots & Tools</h4>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">AI-powered backend that handles repetitive tasks automatically.</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Answer customer questions</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Manage lead inquiries</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Automate processes</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Increase efficiency</li>
+                    </ul>
+                </div>
+
+                <div class="reveal card-lift bg-white rounded-2xl border-2 border-rust/20 p-7 relative" style="transition-delay:350ms;">
+                    <span class="absolute -top-3 left-6 label-tag bg-rust text-white px-3 py-1 rounded-full">Popular</span>
+                    <div class="w-11 h-11 rounded-xl bg-rust-light flex items-center justify-center mb-4">
+                        <i data-lucide="phone" class="w-5 h-5 text-rust"></i>
+                    </div>
+                    <h4 class="text-gray-900 text-[15px] font-bold mb-2">AI Voice Receptionist</h4>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Never miss a call. AI answers 24/7, qualifies leads, books appointments.</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Answer every call instantly</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Capture more opportunities</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Qualify prospects automatically</li>
+                        <li class="flex items-center gap-2 text-gray-600 text-xs"><i data-lucide="check" class="w-3.5 h-3.5 text-rust flex-shrink-0"></i>Schedule appointments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Us -->
+    <section class="py-14 md:py-20">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div class="reveal order-2 lg:order-1" style="transition-delay:100ms;">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white rounded-xl border border-black/[0.06] p-5 card-lift">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
+                                <i data-lucide="clock" class="w-4 h-4 text-emerald-600"></i>
+                            </div>
+                            <p class="text-gray-900 text-sm font-bold mb-1">Save Hours Weekly</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Automate what used to take hours daily.</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-black/[0.06] p-5 card-lift">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
+                                <i data-lucide="scissors" class="w-4 h-4 text-emerald-600"></i>
+                            </div>
+                            <p class="text-gray-900 text-sm font-bold mb-1">Cut Operational Costs</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Replace manual work with AI systems.</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-black/[0.06] p-5 card-lift">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i>
+                            </div>
+                            <p class="text-gray-900 text-sm font-bold mb-1">Higher Conversions</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Faster follow-up = more closed deals.</p>
+                        </div>
+                        <div class="bg-white rounded-xl border border-black/[0.06] p-5 card-lift">
+                            <div class="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center mb-3">
+                                <i data-lucide="scale" class="w-4 h-4 text-emerald-600"></i>
+                            </div>
+                            <p class="text-gray-900 text-sm font-bold mb-1">Scale Without Headcount</p>
+                            <p class="text-gray-400 text-xs leading-relaxed">Grow revenue, not your payroll.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="order-1 lg:order-2">
+                    <p class="reveal label-tag text-rust mb-3">Why Choose Elixtra AI</p>
+                    <h2 class="reveal font-serif text-3xl md:text-4xl text-gray-900 leading-tight mb-5" style="transition-delay:100ms;">
+                        More Leads. More Appointments. <em class="italic text-rust">More Deals.</em>
+                    </h2>
+                    <p class="reveal text-gray-500 text-[15px] leading-relaxed mb-8" style="transition-delay:150ms;">
+                        The systems we build are designed to create predictable growth for your business. No more guesswork, no more manual hustle — just AI-powered systems that deliver results consistently.
+                    </p>
+                    <div class="reveal space-y-3 mb-8" style="transition-delay:200ms;">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                            <span class="text-gray-700 text-sm font-medium">Automate repetitive tasks</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                            <span class="text-gray-700 text-sm font-medium">Increase conversion rates</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                            <span class="text-gray-700 text-sm font-medium">Save time and reduce costs</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 flex-shrink-0"></i>
+                            <span class="text-gray-700 text-sm font-medium">Scale without adding headcount</span>
+                        </div>
+                    </div>
+                    <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="reveal btn-rust text-sm font-semibold px-8 py-3.5 rounded-xl inline-flex items-center gap-2.5" style="transition-delay:250ms;">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        Let's Build Your System
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results -->
+    <section id="results" class="py-20 md:py-28">
+        <div class="max-w-4xl mx-auto px-5 sm:px-8 text-center">
+            <p class="reveal label-tag text-rust mb-5">The Result?</p>
+            <div class="space-y-2.5 mb-12">
+                <h2 class="reveal font-serif text-3xl sm:text-4xl md:text-[52px] text-gray-900 tracking-tight" style="transition-delay:100ms;">More qualified leads.</h2>
+                <h2 class="reveal font-serif text-3xl sm:text-4xl md:text-[52px] text-gray-900 tracking-tight" style="transition-delay:200ms;">More booked appointments.</h2>
+                <h2 class="reveal font-serif text-3xl sm:text-4xl md:text-[52px] text-gray-900 tracking-tight" style="transition-delay:300ms;">More closed deals.</h2>
+                <h2 class="reveal font-serif text-3xl sm:text-4xl md:text-[52px] text-gray-300 tracking-tight" style="transition-delay:400ms;">Less manual work.</h2>
+                <h2 class="reveal font-serif text-3xl sm:text-4xl md:text-[52px] text-rust tracking-tight" style="transition-delay:500ms;">A business that runs smarter with AI.</h2>
+            </div>
+            <div class="reveal" style="transition-delay:600ms;">
+                <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="btn-rust text-base font-semibold px-10 py-4 rounded-xl inline-flex items-center gap-3">
+                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                    Book Your Free 15-Min Call
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+                <p class="text-gray-400 text-xs font-medium mt-4">No commitment. Just a conversation about how AI can grow your business.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Dark -->
+    <section class="py-16 md:py-20 relative" style="background: linear-gradient(145deg, #0C0C14 0%, #1A1A2A 100%);">
+        <div class="absolute inset-0 dark-grid pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-rust/8 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="max-w-3xl mx-auto px-5 sm:px-8 text-center relative z-10">
+            <h3 class="reveal font-serif text-2xl md:text-3xl text-white tracking-tight mb-3">Ready to Automate Your Business?</h3>
+            <p class="reveal text-gray-500 text-sm leading-relaxed mb-8 max-w-lg mx-auto" style="transition-delay:100ms;">
+                Let's hop on a quick 15-minute call. We'll show you exactly how AI can save you time and generate more leads.
+            </p>
+            <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto" style="transition-delay:200ms;">
+                <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-3.5 rounded-xl bg-white text-gray-900 hover:bg-gray-100 transition-all duration-200">
+                    <i data-lucide="phone-call" class="w-4 h-4"></i>
+                    Book Your Call Now
+                </a>
+                <a href="mailto:elixtra.ai@gmail.com" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-semibold px-8 py-3.5 rounded-xl border border-white/15 text-white hover:bg-white/5 transition-all duration-200">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                    Email Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 md:py-20">
+        <div class="max-w-4xl mx-auto px-5 sm:px-8">
+            <div class="text-center mb-10">
+                <p class="reveal label-tag text-rust mb-3">Get In Touch</p>
+                <h2 class="reveal font-serif text-3xl md:text-4xl text-gray-900 tracking-tight" style="transition-delay:100ms;">Let's Connect</h2>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/elixtra.ai/?hl=en" target="_blank" class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-6 text-center group" style="transition-delay:0ms;">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </div>
+                    <p class="text-gray-900 text-sm font-semibold mb-1">Instagram</p>
+                    <p class="text-gray-400 text-xs">@elixtra.ai</p>
+                </a>
+
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/profile.php?id=61585958112392" target="_blank" class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-6 text-center group" style="transition-delay:80ms;">
+                    <div class="w-12 h-12 rounded-xl bg-[#1877F2] flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </div>
+                    <p class="text-gray-900 text-sm font-semibold mb-1">Facebook</p>
+                    <p class="text-gray-400 text-xs">Elixtra AI</p>
+                </a>
+
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/in/iam-baytul" target="_blank" class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-6 text-center group" style="transition-delay:160ms;">
+                    <div class="w-12 h-12 rounded-xl bg-[#0A66C2] flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </div>
+                    <p class="text-gray-900 text-sm font-semibold mb-1">LinkedIn</p>
+                    <p class="text-gray-400 text-xs">Baytul</p>
+                </a>
+
+                <!-- Email -->
+                <a href="mailto:elixtra.ai@gmail.com" class="reveal card-lift bg-white rounded-2xl border border-black/[0.06] p-6 text-center group" style="transition-delay:240ms;">
+                    <div class="w-12 h-12 rounded-xl bg-rust flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <i data-lucide="mail" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <p class="text-gray-900 text-sm font-semibold mb-1">Email</p>
+                    <p class="text-gray-400 text-xs break-all">elixtra.ai@gmail.com</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-cream border-t border-black/[0.06] pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <!-- Top row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+                <!-- Brand -->
+                <div>
+                    <a href="#" class="flex items-center gap-2.5 mb-4">
+                        <div class="logo-frame w-7 h-7 rounded-lg">
+                            <img src="https://z-cdn-media.chatglm.cn/files/17af2cf9-c55c-4342-b3fe-e60b85e924c1.png?auth_key=1882287911-eb83970e543e4666ad2924108c95cfe3-0-a7e1f50cd61b759c7a3bcdacf475a881" alt="Elixtra AI" class="w-full h-full object-cover rounded-lg">
+                        </div>
+                        <span class="text-gray-900 font-sans font-bold text-sm tracking-tight">Elixtra <span class="text-rust">AI</span></span>
+                    </a>
+                    <p class="text-gray-400 text-xs leading-relaxed max-w-xs">
+                        AI systems that generate leads, book calls, and close deals on autopilot. Built for businesses that want to scale.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <p class="text-gray-900 text-xs font-bold mb-4 tracking-wide uppercase">Quick Links</p>
+                    <div class="space-y-2.5">
+                        <a href="#services" class="footer-link text-xs block">Our Services</a>
+                        <a href="#how" class="footer-link text-xs block">How It Works</a>
+                        <a href="#results" class="footer-link text-xs block">Results</a>
+                        <a href="#contact" class="footer-link text-xs block">Contact</a>
+                        <a href="https://cal.com/elixtra.ai/15min" target="_blank" class="footer-link text-xs block">Book Strategy Call</a>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <p class="text-gray-900 text-xs font-bold mb-4 tracking-wide uppercase">Contact</p>
+                    <div class="space-y-3">
+                        <a href="mailto:elixtra.ai@gmail.com" class="flex items-center gap-2.5 footer-link text-xs">
+                            <i data-lucide="mail" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                            elixtra.ai@gmail.com
+                        </a>
+                        <a href="https://www.instagram.com/elixtra.ai/?hl=en" target="_blank" class="flex items-center gap-2.5 footer-link text-xs">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            @elixtra.ai
+                        </a>
+                        <a href="https://www.facebook.com/profile.php?id=61585958112392" target="_blank" class="flex items-center gap-2.5 footer-link text-xs">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            Elixtra AI
+                        </a>
+                        <a href="https://www.linkedin.com/in/iam-baytul" target="_blank" class="flex items-center gap-2.5 footer-link text-xs">
+                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            Baytul
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="border-t border-black/[0.06] pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <!-- Social Icons -->
+                <div class="flex items-center gap-3">
+                    <a href="https://www.instagram.com/elixtra.ai/?hl=en" target="_blank" class="social-icon">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61585958112392" target="_blank" class="social-icon">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/iam-baytul" target="_blank" class="social-icon">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    </a>
+                    <a href="mailto:elixtra.ai@gmail.com" class="social-icon">
+                        <i data-lucide="mail" class="w-4 h-4"></i>
+                    </a>
+                </div>
+                <p class="text-gray-300 text-xs font-medium">&copy; 2025 Elixtra AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+        revealElements.forEach(el => observer.observe(el));
+
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let menuOpen = false;
+        menuToggle.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            mobileMenu.classList.toggle('open', menuOpen);
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                menuOpen = false;
+                mobileMenu.classList.remove('open');
+            });
+        });
+    </script>
+</body>
+</html>
